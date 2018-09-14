@@ -37,7 +37,11 @@ var OperatorHandlers = function($) {
 		$(".hasDatepicker").datepicker("destroy");
 		$from.addClass('vDateField');
 		$to.addClass('vDateField');
-		grappelli.initDateAndTimePicker();
+
+		// We are not using grappelli
+		// Kind of works with Bootsrap datepicker
+
+		//grappelli.initDateAndTimePicker();
 	};
 
 	self.remove_datepickers = function() {
@@ -55,7 +59,6 @@ var OperatorHandlers = function($) {
 		// pick a widget for the value field according to operator
 		self.value = $(elm).val();
 		self.val_input = $(elm).parents('tr').find('.query-value');
-		console.log("selected operator: " + self.value);
 		if (self.value == "range") {
 			self.add_datepickers();
 		} else {
@@ -71,9 +74,11 @@ var OperatorHandlers = function($) {
 		var input = $(elm).parents('tr').find('input.query-value');
 		input.select2("destroy");
 		$.get(choices_url, function(data) {
-			input.select2({'data': data, 'createSearchChoice': function(term) {
-                return { 'id': term, 'text': term };
-            }});
+		    if(data.results.length > 0){
+                input.select2({'data': data, 'createSearchChoice': function(term) {
+                    return { 'id': term, 'text': term };
+                }});
+            }
 		});
 	};
 
@@ -97,7 +102,7 @@ var OperatorHandlers = function($) {
 			if (!value.val() == "null") {
 				value.val("");
 			}
-			op.val("iexact").change();
+			//op.val("iexact").change();
 			self.initialize_select2(elm);
 		}
 	};
@@ -120,15 +125,15 @@ var OperatorHandlers = function($) {
 		});
 		$('.form-row select.query-field').each(function() {
 			$(this).off("change");
-			$(this).data('pre_change', $(this).val());
 			$(this).on("change", function() {
-				var before_change = $(this).data('pre_change');
-				if ($(this).val() != before_change) self.field_selected(this);
-				$(this).data('pre_change', $(this).val());
-			}).change();
+			    var row = $(this).parents('tr');
+		        var value = row.find('.query-value');
+		        value.val("");
+		        self.field_selected(this);
+			});
+			self.field_selected(this);
 		});
 		self.field_selected($('.form-row select.query-field').first());
-
 	};
 
 	self.destroy = function() {

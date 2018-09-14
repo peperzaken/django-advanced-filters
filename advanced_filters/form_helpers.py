@@ -8,28 +8,35 @@ from django.utils import six
 logger = logging.getLogger('advanced_filters.form_helpers')
 
 extra_spaces_pattern = re.compile('\s+')
-
+comma_number_pattern = re.compile('([-+]?[0-9]*,?[0-9]+)')
 
 class VaryingTypeCharField(forms.CharField):
     """
     This CharField subclass returns a regex OR patterns from a
     comma separated list value.
     """
-    _default_separator = ","
+    _default_separator = ";"
 
     def to_python(self, value):
         """
-        Split a string value by separator (default to ",") into a
+        Split a string value by separator (default to ";") into a
         list; then, returns a regex pattern string that ORs the values
         in the resulting list.
+
+        Furthermore, checks if string is a Dutch number and sets it to the database standard.
 
         >>> field = VaryingTypeCharField()
         >>> assert field.to_python('') == ''
         >>> assert field.to_python('test') == 'test'
-        >>> assert field.to_python('and,me') == '(and|me)'
-        >>> assert field.to_python('and,me;too') == '(and|me;too)'
+        >>> assert field.to_python('and;me') == '(and|me)'
+        >>> assert field.to_python('and;me;too') == '(and|me|too)'
         """
         res = super(VaryingTypeCharField, self).to_python(value)
+
+        # Converts comma's to points if value is in the Dutch number format.
+        if re.match(comma_number_pattern, res):
+            return res.replace(',', '.')
+
         split_res = res.split(self._default_separator)
         if not res or len(split_res) < 2:
             return res.strip()
