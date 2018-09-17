@@ -57,7 +57,8 @@ class AdvancedFilterQueryForm(CleanWhiteSpacesMixin, forms.Form):
         ("iexact", _("Equals")),
         ("icontains", _("Contains")),
         ("iregex", _("One of")),
-        ("range", _("DateTime Range")),
+        # Datepicker functionality is broken with our version of Django
+        # ("range", _("DateTime Range")),
         ("isnull", _("Is NULL")),
         ("istrue", _("Is TRUE")),
         ("isfalse", _("Is FALSE")),

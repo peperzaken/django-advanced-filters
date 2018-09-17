@@ -37,10 +37,6 @@ var OperatorHandlers = function($) {
 		$(".hasDatepicker").datepicker("destroy");
 		$from.addClass('vDateField');
 		$to.addClass('vDateField');
-
-		// We are not using grappelli
-		// Kind of works with Bootsrap datepicker
-
 		//grappelli.initDateAndTimePicker();
 	};
 
